@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ArrayCanvas } from "@/components/array-canvas";
 import { BeamPlot } from "@/components/beam-plot";
+import { SavedConfigs } from "@/components/saved-configs";
+import type { SavedConfig } from "@/lib/config-schema";
 import { MICROPHONES, PRESETS, SOURCES, ENVIRONMENTS } from "@/lib/microphones";
 import {
   GEOMETRIES,
@@ -82,6 +84,18 @@ export function App() {
     setSpacingCm(p.spacingCm);
   }
 
+  function loadConfig(cfg: SavedConfig) {
+    if (MICROPHONES.some((m) => m.id === cfg.micId)) setMicId(cfg.micId);
+    if (GEOMETRIES.some((g) => g.id === cfg.geometry)) setGeometry(cfg.geometry as GeometryKind);
+    setN(cfg.n);
+    setSpacingCm(cfg.spacingCm);
+    setTempC(cfg.tempC);
+    setFreqHz(cfg.freqHz);
+    setSteerDeg(cfg.steerDeg);
+    if (SOURCES.some((x) => x.id === cfg.sourceId)) setSourceId(cfg.sourceId);
+    if (ENVIRONMENTS.some((x) => x.id === cfg.envId)) setEnvId(cfg.envId);
+  }
+
   function snapNyquist() {
     setSpacingCm(Math.round(nyquistCm * 10) / 10);
   }
@@ -135,6 +149,11 @@ export function App() {
 
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
         <aside className="flex flex-col gap-5 lg:sticky lg:top-4 lg:self-start">
+          <SavedConfigs
+            current={{ micId, geometry, n, spacingCm, tempC, freqHz, steerDeg, sourceId, envId }}
+            onLoad={loadConfig}
+          />
+
           <section className="rounded-xl border border-border bg-surface p-4">
             <Label>Preset</Label>
             <div className="mt-3 grid grid-cols-2 gap-2">
